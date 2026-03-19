@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GrowthOS — Setup & Deployment Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:13.5px;color:#1a1a1a;background:#fff;max-width:920px;margin:0 auto;padding:48px 56px;line-height:1.75;}
+h1{font-size:30px;font-weight:800;color:#0d0e10;margin-bottom:4px;letter-spacing:-0.5px;}
+.hero-sub{font-size:14px;color:#666;margin-bottom:8px;}
+.hero-bar{height:3px;background:linear-gradient(90deg,#4f8ef7,#3ecf8e);border-radius:99px;margin-bottom:40px;}
+h2{font-size:19px;font-weight:700;color:#0d0e10;margin:44px 0 14px;padding-left:14px;border-left:4px solid #4f8ef7;}
+h3{font-size:14px;font-weight:700;color:#222;margin:20px 0 8px;}
+p{margin-bottom:10px;color:#333;}
+ul,ol{padding-left:24px;margin-bottom:14px;}
+li{margin-bottom:5px;color:#333;}
+a{color:#4f8ef7;}
+code{background:#f0f2f6;padding:2px 7px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px;color:#c7254e;}
+pre{background:#0e0f11;color:#e8eaf0;padding:18px 20px;border-radius:10px;margin:12px 0 18px;font-family:'Courier New',monospace;font-size:12px;line-height:1.8;overflow-x:auto;border-left:3px solid #4f8ef7;}
+pre code{background:none;color:#e8eaf0;padding:0;font-size:12px;}
+.box{border-radius:10px;padding:14px 18px;margin:14px 0;font-size:13px;}
+.box-warn{background:#fffbe6;border:1px solid #ffe58f;}.box-warn::before{content:'⚠️  ';}
+.box-tip{background:#e6f4ff;border:1px solid #91caff;}.box-tip::before{content:'💡  ';}
+.box-ok{background:#f0fff4;border:1px solid #95de64;}.box-ok::before{content:'✅  ';}
+.box-steps{background:#f8f9ff;border:1px solid #dde3ff;}
+.step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
+.step-n{background:#4f8ef7;color:#fff;border-radius:50%;width:22px;height:22px;min-width:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px;}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+th{background:#0e0f11;color:#e8eaf0;padding:10px 14px;text-align:left;font-size:12px;font-weight:600;}
+td{padding:9px 14px;border-bottom:1px solid #eee;}
+tr:hover td{background:#f8f9ff;}
+.file-tree{background:#0e0f11;color:#e8eaf0;padding:18px 22px;border-radius:10px;font-family:'Courier New',monospace;font-size:12px;line-height:2;margin:14px 0;}
+.file-tree .dir{color:#4f8ef7;font-weight:600;}
+.file-tree .comment{color:#5a6070;}
+.toc{background:#f8f9ff;border:1px solid #dde3ff;border-radius:10px;padding:20px 26px;margin:24px 0 40px;}
+.toc-title{font-size:13px;font-weight:700;color:#4f8ef7;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;}
+.toc ol{column-count:2;column-gap:24px;}
+.toc li{margin-bottom:4px;break-inside:avoid;}
+.toc a{color:#333;text-decoration:none;}
+.toc a:hover{color:#4f8ef7;}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;margin-right:3px;}
+.b-blue{background:#e6f0ff;color:#1d6ee6;}
+.b-green{background:#e6fff4;color:#1a9e5e;}
+.b-amber{background:#fff8e6;color:#b87c00;}
+.b-red{background:#fff0f0;color:#c0392b;}
+.b-purple{background:#f3eeff;color:#7c3aed;}
+hr{border:none;border-top:1px solid #eee;margin:40px 0;}
+.cmd-label{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#5a6070;margin-bottom:4px;}
+@media print{body{padding:20px;} pre{page-break-inside:avoid;} h2{page-break-before:auto;}}
+</style>
+</head>
+<body>
+
+<h1>🌱 GrowthOS</h1>
+<div class="hero-sub">Complete Setup, Development &amp; Cloud Deployment Guide</div>
+<div class="hero-bar"></div>
+
+<div class="toc">
+  <div class="toc-title">Table of Contents</div>
+  <ol>
+    <li><a href="#s1">What Was Built</a></li>
+    <li><a href="#s2">Project File Structure</a></li>
+    <li><a href="#s3">Prerequisites — Install These First</a></li>
+    <li><a href="#s4">Local Setup — Step by Step</a></li>
+    <li><a href="#s5">Database Setup</a></li>
+    <li><a href="#s6">Running the App</a></li>
+    <li><a href="#s7">How to Use Every Feature</a></li>
+    <li><a href="#s8">Deploy Free on Render.com</a></li>
+    <li><a href="#s9">Deploy on Railway</a></li>
+    <li><a href="#s10">Deploy on Ubuntu VPS</a></li>
+    <li><a href="#s11">Environment Variables</a></li>
+    <li><a href="#s12">Troubleshooting</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════════ SECTION 1 -->
+<h2 id="s1">1. What Was Built</h2>
+<p>GrowthOS is a production-grade full-stack web application. Every piece of data is stored in a real PostgreSQL database — nothing is lost on refresh. You log in with email and password, and your data is private to your account.</p>
+
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>What it does</th></tr>
+  <tr><td>Frontend</td><td>React 18 + Vite</td><td>All the pages, UI, charts, calendar</td></tr>
+  <tr><td>Backend</td><td>Node.js + Express</td><td>REST API — handles all data operations</td></tr>
+  <tr><td>Database</td><td>PostgreSQL 14+</td><td>Stores users, tasks, logs, notes, goals, everything</td></tr>
+  <tr><td>Auth</td><td>JWT + bcrypt</td><td>Secure login; passwords are hashed, never stored plain</td></tr>
+  <tr><td>Charts</td><td>Chart.js + react-chartjs-2</td><td>All analytics charts</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ SECTION 2 -->
+<h2 id="s2">2. Project File Structure</h2>
+<div class="file-tree">
+<span class="dir">growthOS/</span>
+├── package.json                    <span class="comment">← Root: starts both servers together</span>
+├── README.md
+├── .gitignore
+│
+├── <span class="dir">backend/</span>
+│   ├── server.js                   <span class="comment">← Express entry point, port 5000</span>
+│   ├── package.json
+│   ├── .env.example                <span class="comment">← COPY this to .env and fill in</span>
+│   ├── <span class="dir">db/</span>
+│   │   ├── pool.js                 <span class="comment">← PostgreSQL connection pool</span>
+│   │   └── migrate.js              <span class="comment">← Run once: creates all 10 tables</span>
+│   ├── <span class="dir">middleware/</span>
+│   │   └── auth.js                 <span class="comment">← JWT token guard for protected routes</span>
+│   └── <span class="dir">routes/</span>
+│       ├── auth.js                 <span class="comment">← POST /api/auth/register, /login, GET /me</span>
+│       ├── tasks.js                <span class="comment">← Full CRUD + nested subtasks + time logging</span>
+│       └── api.js                  <span class="comment">← Projects, Logs, Notes, Goals, Roadmap,</span>
+│                                       <span class="comment">  Revision, Calendar Events, Analytics</span>
+│
+└── <span class="dir">frontend/</span>
+    ├── index.html
+    ├── vite.config.js              <span class="comment">← Dev proxy: /api → localhost:5000</span>
+    ├── package.json
+    ├── .env.example                <span class="comment">← Only needed for separate cloud deploys</span>
+    └── <span class="dir">src/</span>
+        ├── main.jsx                <span class="comment">← React entry + BrowserRouter</span>
+        ├── App.jsx                 <span class="comment">← Shell: sidebar + page switcher + modals</span>
+        ├── api.js                  <span class="comment">← Axios client with auto JWT header</span>
+        ├── index.css               <span class="comment">← Full dark theme design system</span>
+        ├── utils.js                <span class="comment">← Dates, tag colours, streak calc</span>
+        ├── <span class="dir">context/</span>
+        │   └── AuthContext.jsx     <span class="comment">← Global login state</span>
+        ├── <span class="dir">hooks/</span>
+        │   └── useToast.js         <span class="comment">← Toast notification system</span>
+        ├── <span class="dir">components/</span>
+        │   ├── Sidebar.jsx         <span class="comment">← Navigation + streak pill + user info</span>
+        │   ├── MiniCalendar.jsx    <span class="comment">← Dynamic calendar, changes every month</span>
+        │   ├── TaskTree.jsx        <span class="comment">← Infinitely nested task renderer</span>
+        │   └── AddTaskModal.jsx    <span class="comment">← Add task form modal</span>
+        └── <span class="dir">pages/</span>
+            ├── Login.jsx
+            ├── Register.jsx
+            ├── Dashboard.jsx       <span class="comment">← Metrics, today tasks, bar chart, calendar</span>
+            ├── TasksPage.jsx       <span class="comment">← Full task list with search + filters</span>
+            ├── TimerPage.jsx       <span class="comment">← Per-task timers + Pomodoro</span>
+            ├── CalendarPage.jsx    <span class="comment">← Full calendar with deadline overlay</span>
+            └── OtherPages.jsx      <span class="comment">← Roadmap, Projects, Notes, Revision,</span>
+                                        <span class="comment">  Analytics, Insights (all in one file)</span>
+</div>
+
+<!-- ═══════════════════════════════════════════ SECTION 3 -->
+<h2 id="s3">3. Prerequisites — Install These First</h2>
+<p>You need these three tools installed on your computer before anything else works.</p>
+
+<table>
+  <tr><th>Tool</th><th>Minimum Version</th><th>How to install</th><th>Verify install</th></tr>
+  <tr><td><strong>Node.js</strong></td><td>18 LTS or higher</td><td>Go to <a href="https://nodejs.org">nodejs.org</a> → Download LTS</td><td><code>node -v</code></td></tr>
+  <tr><td><strong>npm</strong></td><td>9+</td><td>Comes bundled with Node.js</td><td><code>npm -v</code></td></tr>
+  <tr><td><strong>PostgreSQL</strong></td><td>14 or higher</td><td>See instructions below</td><td><code>psql --version</code></td></tr>
+</table>
+
+<h3>Installing PostgreSQL by operating system</h3>
+
+<div class="cmd-label">Windows</div>
+<ol>
+  <li>Go to <a href="https://www.postgresql.org/download/windows/">postgresql.org/download/windows</a></li>
+  <li>Download the installer for PostgreSQL 16</li>
+  <li>Run the installer — remember the password you set for the <code>postgres</code> user</li>
+  <li>PostgreSQL runs automatically as a Windows service after install</li>
+</ol>
+
+<div class="cmd-label">macOS</div>
+<pre><code># Using Homebrew (recommended):
+brew install postgresql@16
+brew services start postgresql@16
+
+# Or download the installer from postgres.app</code></pre>
+
+<div class="cmd-label">Ubuntu / Debian Linux</div>
+<pre><code>sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql</code></pre>
+
+<!-- ═══════════════════════════════════════════ SECTION 4 -->
+<h2 id="s4">4. Local Setup — Step by Step</h2>
+
+<div class="box box-steps">
+  <div class="step"><div class="step-n">1</div><div><strong>Place all the project files</strong> in a folder called <code>growthOS</code> on your computer, matching the structure shown in Section 2 exactly.</div></div>
+  <div class="step"><div class="step-n">2</div><div><strong>Open a terminal</strong> (Command Prompt on Windows, Terminal on Mac/Linux) and navigate into the folder:<br><code>cd path/to/growthOS</code></div></div>
+  <div class="step"><div class="step-n">3</div><div><strong>Install backend dependencies:</strong><br><pre style="margin:6px 0;"><code>cd backend
+npm install
+cd ..</code></pre></div></div>
+  <div class="step"><div class="step-n">4</div><div><strong>Install frontend dependencies:</strong><br><pre style="margin:6px 0;"><code>cd frontend
+npm install
+cd ..</code></pre></div></div>
+  <div class="step"><div class="step-n">5</div><div><strong>Install root dependencies</strong> (concurrently — for running both servers at once):<br><pre style="margin:6px 0;"><code>npm install</code></pre></div></div>
+  <div class="step"><div class="step-n">6</div><div><strong>Create your .env file</strong> — copy the example and edit it:<br><pre style="margin:6px 0;"><code># On Mac/Linux:
+cp backend/.env.example backend/.env
+
+# On Windows (Command Prompt):
+copy backend\.env.example backend\.env</code></pre>
+  Now open <code>backend/.env</code> in any text editor (Notepad, VS Code, etc.) and fill in your values — see Section 5 and 11.</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SECTION 5 -->
+<h2 id="s5">5. Database Setup</h2>
+
+<h3>Step 1 — Confirm PostgreSQL is running</h3>
+<pre><code># Mac:
+brew services list | grep postgresql
+
+# Ubuntu:
+sudo service postgresql status
+
+# Windows: Check Services app — look for "postgresql-x64-16"</code></pre>
+
+<h3>Step 2 — Create the database</h3>
+<pre><code># Open the PostgreSQL command line:
+psql -U postgres
+
+# You will be asked for the postgres user password (set during install)
+# Once inside psql, type:
+CREATE DATABASE growthos;
+\q</code></pre>
+
+<div class="box box-tip">On Ubuntu you may need to run: <code>sudo -u postgres psql</code> instead</div>
+
+<h3>Step 3 — Fill in your .env file</h3>
+<p>Open <code>backend/.env</code> and set it up like this:</p>
+<pre><code>PORT=5000
+DATABASE_URL=postgresql://postgres:YOUR_POSTGRES_PASSWORD@localhost:5432/growthos
+JWT_SECRET=make_this_a_long_random_string_at_least_32_chars
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173</code></pre>
+
+<div class="box box-warn">Replace <code>YOUR_POSTGRES_PASSWORD</code> with the actual password you set when installing PostgreSQL. Never share or commit this file.</div>
+
+<h3>Step 4 — Run the database migration</h3>
+<pre><code>cd backend
+npm run db:migrate
+cd ..</code></pre>
+
+<p>You should see: <strong>✅ Database migration complete!</strong></p>
+<p>This creates all 10 tables in your database. You only need to run this once. The tables created are:</p>
+<ul>
+  <li><code>users</code> — accounts with bcrypt-hashed passwords</li>
+  <li><code>tasks</code> — tasks with <code>parent_id</code> self-reference for infinite nesting</li>
+  <li><code>projects</code> — project containers linked to tasks</li>
+  <li><code>daily_logs</code> — daily study hours, mood, and notes (one per day per user)</li>
+  <li><code>notes</code> — personal notes with pin and search</li>
+  <li><code>goals</code> — top-level roadmap goals</li>
+  <li><code>roadmap_items</code> — months, weeks, day topics under each goal</li>
+  <li><code>revision_topics</code> — spaced repetition topics with box level and next due date</li>
+  <li><code>time_logs</code> — timer session seconds per task per day</li>
+  <li><code>calendar_events</code> — custom calendar events with colour coding</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════ SECTION 6 -->
+<h2 id="s6">6. Running the App</h2>
+
+<h3>Start everything with one command</h3>
+<p>From the root <code>growthOS/</code> folder:</p>
+<pre><code>npm run dev</code></pre>
+
+<p>This starts both servers simultaneously:</p>
+<table>
+  <tr><th>Server</th><th>URL</th><th>What it is</th></tr>
+  <tr><td>Frontend (React)</td><td><strong>http://localhost:5173</strong></td><td>Open this in your browser</td></tr>
+  <tr><td>Backend (API)</td><td>http://localhost:5000</td><td>Handles all data requests</td></tr>
+</table>
+
+<div class="box box-ok">Open <strong>http://localhost:5173</strong> in your browser. You should see the GrowthOS login screen. Register an account and you're ready to go!</div>
+
+<h3>Or run them separately in two terminals</h3>
+<pre><code># Terminal 1 — Backend
+cd backend
+npm run dev
+# Shows: 🚀 GrowthOS backend running on port 5000
+
+# Terminal 2 — Frontend
+cd frontend
+npm run dev
+# Shows: Local: http://localhost:5173</code></pre>
+
+<h3>Stopping the app</h3>
+<p>Press <strong>Ctrl + C</strong> in the terminal to stop.</p>
+
+<!-- ═══════════════════════════════════════════ SECTION 7 -->
+<h2 id="s7">7. How to Use Every Feature</h2>
+
+<h3><span class="badge b-blue">Dashboard</span></h3>
+<ul>
+  <li>Shows your daily metrics: tasks done today, hours studied, streak, completion rate</li>
+  <li>Mini bar chart shows your study hours for the last 7 days</li>
+  <li>The calendar on the right shows the current month and changes automatically as months pass</li>
+  <li>Blue dots on calendar dates = tasks with that deadline. Coloured dots = custom events</li>
+  <li>Click any calendar date to instantly see what tasks are due that day</li>
+  <li>Log your mood by clicking one of the emoji buttons (saves to database)</li>
+  <li>Click <strong>⚡ Log Day</strong> in the top bar to log today's hours, what you studied, and wins</li>
+  <li>Progress bars under the streak show your completion rate per subject tag</li>
+</ul>
+
+<h3><span class="badge b-blue">Tasks — The Core System</span></h3>
+<ul>
+  <li>Click <strong>+ New Task</strong> to add a task. Fill in: title, description, tag, priority, deadline, planned hours, and optionally link it to a project</li>
+  <li>Tasks are stored permanently in PostgreSQL — they survive refresh and reopening the browser</li>
+  <li>Click the <strong>▸ arrow</strong> on the left of any task to expand it</li>
+  <li>Once expanded, type in the <strong>"+ subtask"</strong> input at the bottom and press Enter to add a subtask inside it</li>
+  <li>Expand that subtask and add another subtask inside it — this nesting goes as deep as you want</li>
+  <li>A parent task shows a <strong>done/total counter</strong> (e.g. 2/5) showing how many subtasks are complete</li>
+  <li>Click <strong>📝</strong> to open a notes area attached to any task</li>
+  <li>Click the done checkbox to toggle a task complete — it updates in the database immediately</li>
+  <li>Use the search bar and filters to find tasks by name, tag, or status</li>
+</ul>
+
+<div class="box box-tip">
+  <strong>Nested tasks example:</strong><br>
+  "Learn Machine Learning" (root task)<br>
+  &nbsp;&nbsp;&nbsp;→ "Week 1: Linear Regression" (subtask)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ "Watch Andrew Ng lecture" (sub-subtask)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ "Implement in Python" (sub-subtask)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ "Write gradient descent from scratch" (sub-sub-subtask)
+</div>
+
+<h3><span class="badge b-blue">Time Tracker</span></h3>
+<ul>
+  <li>Every pending task appears here with a timer</li>
+  <li>Click <strong>Start</strong> to begin timing — the seconds tick live on screen</li>
+  <li>Click <strong>Stop</strong> to end the session — the seconds are saved to the database automatically</li>
+  <li>The total focus time for the session is shown at the top</li>
+  <li>The <strong>Pomodoro timer</strong> below lets you do focused 25-minute sessions</li>
+  <li>Click <strong>Focus 25m / Break 5m / Long Break 15m</strong> to switch modes</li>
+  <li>An alert fires when the timer reaches zero</li>
+</ul>
+
+<h3><span class="badge b-green">Calendar</span></h3>
+<ul>
+  <li>Shows a full month grid. Use <strong>‹</strong> and <strong>›</strong> to navigate between months</li>
+  <li>The calendar automatically highlights today's date</li>
+  <li>Blue dots on a date = tasks with that deadline</li>
+  <li>Click a date to see all tasks due that day on the right panel</li>
+  <li>Scroll down to see upcoming deadlines in order</li>
+  <li>Click <strong>+ Add Event</strong> to add a custom event on any date with a colour (blue, green, amber, red, purple)</li>
+  <li>Events are saved to the database and shown as coloured dots on the calendar</li>
+  <li>Events for the current month are listed below the calendar grid</li>
+</ul>
+
+<h3><span class="badge b-green">Roadmap</span></h3>
+<ul>
+  <li>Create a high-level goal like "Become a Data Scientist" with a target date and duration in months</li>
+  <li>Click the goal to expand it, then click <strong>+ Month</strong> to add a month (e.g. "Month 1: Python + Statistics")</li>
+  <li>Click the month to expand it, then click <strong>+ Week</strong> to add a week (e.g. "Week 1: Python Basics")</li>
+  <li>Click the week to expand it, then click <strong>+ Day</strong> to add a day topic (e.g. "Variables and loops")</li>
+  <li>Everything is collapsible and editable — click ✕ to delete any item</li>
+  <li>All data saves to PostgreSQL immediately</li>
+</ul>
+
+<h3><span class="badge b-green">Projects</span></h3>
+<ul>
+  <li>Create project containers for multi-task work like "EDA on Titanic Dataset"</li>
+  <li>When adding tasks, link them to a project via the Project dropdown</li>
+  <li>Each project card shows: total tasks, done tasks, time logged from timers, target date, and a progress bar</li>
+</ul>
+
+<h3><span class="badge b-green">Notes</span></h3>
+<ul>
+  <li>Save formulas, cheatsheets, code snippets, and concepts with a title, body, and tag</li>
+  <li>Pin important notes to the top by clicking the 📍 button</li>
+  <li>Search across all note titles and bodies in real time</li>
+  <li>Notes persist in PostgreSQL — never lost</li>
+</ul>
+
+<h3><span class="badge b-amber">Revision (Spaced Repetition)</span></h3>
+<ul>
+  <li>Add any topic you want to review later (e.g. "Bayes Theorem", "Big-O notation")</li>
+  <li>Choose a tag and initial interval (Tomorrow, 3 days, 1 week, 2 weeks, 1 month)</li>
+  <li>When the due date arrives, the topic appears in the <strong>"Due for review"</strong> section highlighted in red</li>
+  <li>Click <strong>✓ Done</strong> after reviewing — the system automatically schedules the next review further out using the Leitner box system (Box 1→2→3→4→5 = 1→3→7→14→30 days)</li>
+  <li>The box level is shown next to each topic so you can see your mastery level</li>
+</ul>
+
+<h3><span class="badge b-amber">Analytics</span></h3>
+<ul>
+  <li><strong>Daily hours bar chart</strong> — shows your logged study hours for the last 7 days</li>
+  <li><strong>Time by subject doughnut</strong> — shows how your actual timer time is distributed across subjects (only fills in once you use the task timers)</li>
+  <li><strong>Weekly completion line chart</strong> — shows your task completion rate percentage over recent weeks</li>
+  <li><strong>Tag completion stacked bar</strong> — shows done vs pending tasks per subject tag</li>
+</ul>
+
+<h3><span class="badge b-purple">Insights</span></h3>
+<ul>
+  <li>Auto-generated observations built from your real data</li>
+  <li>Shows: your most productive day of the week, which subject you spend most time on, current completion rate, total hours logged, overdue task alerts, and streak encouragement</li>
+  <li>Recent logs are shown at the bottom with mood emoji, hours, what you studied, and wins</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════ SECTION 8 -->
+<h2 id="s8">8. Deploy Free on Render.com (Recommended)</h2>
+<p>Render gives you a free PostgreSQL database (90 days, then $7/mo) and a free backend (spins down after 15 min of inactivity). This is the easiest option to get your app online.</p>
+
+<h3>Step 1 — Push your code to GitHub</h3>
+<pre><code>cd growthOS
+
+# Initialize git
+git init
+git add .
+git commit -m "Initial GrowthOS commit"
+
+# Create a new repo on github.com (name it growthos), then:
+git remote add origin https://github.com/YOUR_USERNAME/growthos.git
+git push -u origin main</code></pre>
+
+<h3>Step 2 — Create a PostgreSQL database on Render</h3>
+<ol>
+  <li>Go to <a href="https://render.com">render.com</a> → Sign up with GitHub (free)</li>
+  <li>Click <strong>New +</strong> → <strong>PostgreSQL</strong></li>
+  <li>Name: <code>growthos-db</code>, Region: pick closest to you (Singapore for India)</li>
+  <li>Plan: <strong>Free</strong></li>
+  <li>Click <strong>Create Database</strong></li>
+  <li>Wait ~1 min, then copy the <strong>External Database URL</strong> from the Info tab — it looks like:<br>
+  <code>postgresql://user:password@host.oregon-postgres.render.com/growthos_xxxx</code></li>
+</ol>
+
+<h3>Step 3 — Deploy the backend API</h3>
+<ol>
+  <li>Click <strong>New +</strong> → <strong>Web Service</strong></li>
+  <li>Connect your GitHub repo</li>
+  <li>Settings:
+    <table style="margin:8px 0;">
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Name</td><td>growthos-api</td></tr>
+      <tr><td>Root Directory</td><td>backend</td></tr>
+      <tr><td>Runtime</td><td>Node</td></tr>
+      <tr><td>Build Command</td><td><code>npm install</code></td></tr>
+      <tr><td>Start Command</td><td><code>npm start</code></td></tr>
+      <tr><td>Plan</td><td>Free</td></tr>
+    </table>
+  </li>
+  <li>Scroll to <strong>Environment Variables</strong> and add:
+    <table style="margin:8px 0;">
+      <tr><th>Key</th><th>Value</th></tr>
+      <tr><td><code>DATABASE_URL</code></td><td>Paste the External Database URL from Step 2</td></tr>
+      <tr><td><code>JWT_SECRET</code></td><td>Any long random string, e.g. <code>grwthos_prod_secret_XYZ_123_abc</code></td></tr>
+      <tr><td><code>NODE_ENV</code></td><td><code>production</code></td></tr>
+      <tr><td><code>FRONTEND_URL</code></td><td>Leave blank for now — fill in after deploying frontend</td></tr>
+    </table>
+  </li>
+  <li>Click <strong>Create Web Service</strong> — deployment takes ~3 minutes</li>
+  <li>Once live, test it: open <code>https://growthos-api.onrender.com/health</code> — you should see <code>{"status":"ok"}</code></li>
+  <li>Run migrations via the Render Shell tab: click <strong>Shell</strong> → type <code>node db/migrate.js</code> → press Enter</li>
+</ol>
+
+<h3>Step 4 — Deploy the frontend</h3>
+<ol>
+  <li>Click <strong>New +</strong> → <strong>Static Site</strong></li>
+  <li>Connect the same GitHub repo</li>
+  <li>Settings:
+    <table style="margin:8px 0;">
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Name</td><td>growthos</td></tr>
+      <tr><td>Root Directory</td><td>frontend</td></tr>
+      <tr><td>Build Command</td><td><code>npm install &amp;&amp; npm run build</code></td></tr>
+      <tr><td>Publish Directory</td><td>dist</td></tr>
+    </table>
+  </li>
+  <li>Add Environment Variable:
+    <table style="margin:8px 0;">
+      <tr><th>Key</th><th>Value</th></tr>
+      <tr><td><code>VITE_API_URL</code></td><td><code>https://growthos-api.onrender.com</code></td></tr>
+    </table>
+  </li>
+  <li>Click <strong>Create Static Site</strong></li>
+  <li>Once deployed, copy the frontend URL (e.g. <code>https://growthos.onrender.com</code>)</li>
+  <li>Go back to the backend service → Environment → update <code>FRONTEND_URL</code> to your frontend URL → Save → it will redeploy</li>
+</ol>
+
+<div class="box box-ok">Your app is now live and accessible from any device! Share the frontend URL with yourself on your phone too.</div>
+
+<!-- ═══════════════════════════════════════════ SECTION 9 -->
+<h2 id="s9">9. Deploy on Railway</h2>
+<p>Railway is slightly simpler than Render and has a $5/month free credit that usually covers a small app.</p>
+<ol>
+  <li>Go to <a href="https://railway.app">railway.app</a> → Login with GitHub</li>
+  <li>Click <strong>New Project</strong> → <strong>Deploy from GitHub repo</strong></li>
+  <li>Select your <code>growthos</code> repo</li>
+  <li>Railway auto-detects Node.js. Set Root Directory to <code>backend</code></li>
+  <li>In the service settings, click <strong>Add Plugin</strong> → <strong>PostgreSQL</strong> — Railway provisions a database and injects <code>DATABASE_URL</code> automatically</li>
+  <li>Set environment variables: <code>JWT_SECRET</code>, <code>NODE_ENV=production</code>, <code>FRONTEND_URL</code></li>
+  <li>Set Start Command to <code>npm start</code></li>
+  <li>Open the Railway shell and run: <code>node db/migrate.js</code></li>
+  <li>Deploy the frontend to <strong>Vercel</strong>: go to vercel.com → Import Git repo → set Root Directory to <code>frontend</code> → add <code>VITE_API_URL</code> env var → Deploy</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════ SECTION 10 -->
+<h2 id="s10">10. Deploy on Ubuntu VPS (Full Control)</h2>
+<p>Use a DigitalOcean Droplet ($6/mo), Hetzner, or any Ubuntu 22.04 server.</p>
+
+<h3>On your server — run all of these commands:</h3>
+<pre><code># 1. Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# 2. Install PostgreSQL
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# 3. Create the database and user
+sudo -u postgres psql -c "CREATE DATABASE growthos;"
+sudo -u postgres psql -c "CREATE USER growthos_user WITH PASSWORD 'yourpassword';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE growthos TO growthos_user;"
+
+# 4. Install PM2 (keeps Node.js running forever) and Nginx
+sudo npm install -g pm2
+sudo apt install -y nginx
+
+# 5. Clone your repository
+git clone https://github.com/YOUR_USERNAME/growthos.git /var/www/growthos
+cd /var/www/growthos
+
+# 6. Setup backend
+cd backend
+cp .env.example .env
+nano .env
+# Fill in: DATABASE_URL, JWT_SECRET, NODE_ENV=production, FRONTEND_URL=https://yourdomain.com
+npm install
+node db/migrate.js
+
+# 7. Start backend with PM2
+pm2 start server.js --name growthos-api
+pm2 save
+pm2 startup  # Copy and run the command it gives you
+
+# 8. Build frontend
+cd ../frontend
+npm install
+VITE_API_URL=https://yourdomain.com npm run build
+# Built files go into frontend/dist/</code></pre>
+
+<h3>Nginx config — create this file:</h3>
+<pre><code>sudo nano /etc/nginx/sites-available/growthos</code></pre>
+<pre><code>server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    # Serve React frontend
+    root /var/www/growthos/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy API calls to Express backend
+    location /api {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_cache_bypass $http_upgrade;
+    }
+}</code></pre>
+
+<pre><code># Enable the site
+sudo ln -s /etc/nginx/sites-available/growthos /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx
+
+# Add HTTPS (free with Let's Encrypt)
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com</code></pre>
+
+<div class="box box-ok">Your app is now live at https://yourdomain.com with auto-renewing SSL. PM2 ensures it restarts automatically if the server reboots.</div>
+
+<!-- ═══════════════════════════════════════════ SECTION 11 -->
+<h2 id="s11">11. Environment Variables Reference</h2>
+
+<h3>backend/.env</h3>
+<table>
+  <tr><th>Variable</th><th>Required</th><th>Description</th><th>Example</th></tr>
+  <tr><td><code>PORT</code></td><td>No</td><td>Port for the Express server</td><td><code>5000</code></td></tr>
+  <tr><td><code>DATABASE_URL</code></td><td><strong>Yes</strong></td><td>Full PostgreSQL connection string</td><td><code>postgresql://postgres:pass@localhost:5432/growthos</code></td></tr>
+  <tr><td><code>JWT_SECRET</code></td><td><strong>Yes</strong></td><td>Secret used to sign auth tokens. Use a long random string in production. Never share it.</td><td><code>super_secret_random_32chars_xyz</code></td></tr>
+  <tr><td><code>NODE_ENV</code></td><td>No</td><td>Set to <code>production</code> on server, <code>development</code> locally. Controls SSL behaviour for DB connection.</td><td><code>development</code></td></tr>
+  <tr><td><code>FRONTEND_URL</code></td><td><strong>Yes</strong></td><td>Allowed CORS origin. Must match your frontend URL exactly — no trailing slash.</td><td><code>http://localhost:5173</code></td></tr>
+</table>
+
+<h3>frontend/.env (only for cloud deployments)</h3>
+<table>
+  <tr><th>Variable</th><th>Required</th><th>Description</th><th>Example</th></tr>
+  <tr><td><code>VITE_API_URL</code></td><td>Only in production</td><td>Your backend's full URL. Not needed locally — Vite proxy handles it.</td><td><code>https://growthos-api.onrender.com</code></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════ SECTION 12 -->
+<h2 id="s12">12. Troubleshooting</h2>
+
+<h3>❌ "Cannot connect to the server" / blank page</h3>
+<ul>
+  <li>Make sure the backend is running: <code>cd backend && npm run dev</code></li>
+  <li>Make sure the frontend is running: <code>cd frontend && npm run dev</code></li>
+  <li>Check the terminal for error messages</li>
+  <li>Visit <code>http://localhost:5000/health</code> — if you see JSON, the backend is working</li>
+</ul>
+
+<h3>❌ "role postgres does not exist" or DB connection error</h3>
+<pre><code># On Ubuntu, the default user is postgres, not your system user:
+sudo -u postgres psql
+CREATE DATABASE growthos;
+\q
+
+# Then set your .env to use:
+DATABASE_URL=postgresql://postgres@localhost:5432/growthos
+# (no password needed on local Ubuntu install)</code></pre>
+
+<h3>❌ Migration fails: "already exists"</h3>
+<p>This is safe — all tables use <code>CREATE TABLE IF NOT EXISTS</code>. You can re-run the migration anytime without harm. If you see a different error, drop and recreate the database:</p>
+<pre><code>psql -U postgres -c "DROP DATABASE growthos;"
+psql -U postgres -c "CREATE DATABASE growthos;"
+cd backend && npm run db:migrate</code></pre>
+
+<h3>❌ "Module not found" on npm run dev</h3>
+<pre><code>cd backend && npm install
+cd ../frontend && npm install</code></pre>
+
+<h3>❌ 401 Unauthorized errors after deploying</h3>
+<ul>
+  <li>Make sure <code>JWT_SECRET</code> in production matches what was used to generate existing tokens</li>
+  <li>If you changed the secret, all users will need to log in again — this is normal and expected</li>
+</ul>
+
+<h3>❌ CORS errors in production (API calls blocked)</h3>
+<ul>
+  <li>Set <code>FRONTEND_URL</code> in backend environment to your exact frontend URL</li>
+  <li>Example: <code>FRONTEND_URL=https://growthos.onrender.com</code> (no trailing slash)</li>
+  <li>After changing env vars on Render or Railway, the service will redeploy automatically</li>
+</ul>
+
+<h3>❌ Calendar not showing the current month</h3>
+<ul>
+  <li>The calendar auto-initialises to <code>new Date()</code> — the current month on your device</li>
+  <li>Use the ‹ and › buttons to navigate — it fetches events from the database for that month each time</li>
+</ul>
+
+<h3>❌ Timer data disappearing on page refresh</h3>
+<p>The in-progress timer state (counting up live) is held in React state and resets on refresh — this is intentional. <strong>Always click Stop before refreshing</strong> — clicking Stop is what saves the seconds to the database. Partially-timed sessions that were not stopped are not saved, by design.</p>
+
+<hr>
+
+<p style="text-align:center;color:#aaa;font-size:12px;margin-top:8px;">
+  🌱 GrowthOS &nbsp;·&nbsp; React + Vite &nbsp;·&nbsp; Node.js + Express &nbsp;·&nbsp; PostgreSQL &nbsp;·&nbsp; JWT Auth<br>
+  Built for your personal academic journey. Study every day. Track everything. Grow consistently.
+</p>
+
+</body>
+</html>
