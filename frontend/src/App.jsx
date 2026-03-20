@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import api from './api';
 import { useAuth } from './context/AuthContext';
 import { useToast } from './hooks/useToast';
@@ -19,21 +18,15 @@ const PAGE_TITLES = {
   notes: 'Notes', revision: 'Revision', analytics: 'Analytics', insights: 'Insights',
 };
 
-// Quick Log Modal
 function QuickLogModal({ onClose, onSave, toast }) {
   const [form, setForm] = useState({ hours_studied: '', mood: '🙂', what_studied: '', wins: '' });
   const [saving, setSaving] = useState(false);
-
   async function save() {
     setSaving(true);
-    try {
-      await onSave(form);
-      onClose();
-      toast('Daily log saved ✓');
-    } catch { toast('Failed to save log'); }
+    try { await onSave(form); onClose(); toast('Daily log saved ✓'); }
+    catch { toast('Failed to save log'); }
     finally { setSaving(false); }
   }
-
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
@@ -73,85 +66,78 @@ function QuickLogModal({ onClose, onSave, toast }) {
 }
 
 export default function App() {
-  const [page, setPage] = useState('dashboard');
-  const [tasks, setTasks] = useState([]);
-  const [logs, setLogs] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [showQuickLog, setShowQuickLog] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast, ToastContainer } = useToast();
+  const [page, setPage]                 = useState('dashboard');
+  const [tasks, setTasks]               = useState([]);
+  const [logs, setLogs]                 = useState([]);
+  const [projects, setProjects]         = useState([]);
+  const [dataLoading, setDataLoading]   = useState(true);
+  const [showQuickLog, setShowQuickLog] = useState(false);
 
-  // Load initial data
   useEffect(() => {
+    if (!user) return;
+    setDataLoading(true);
     Promise.all([
       api.get('/tasks').then(r => setTasks(r.data)),
       api.get('/logs').then(r => setLogs(r.data)),
       api.get('/projects').then(r => setProjects(r.data)),
-    ]).catch(console.error).finally(() => setLoading(false));
-  }, []);
+    ]).catch(err => console.error('Failed to load app data:', err))
+      .finally(() => setDataLoading(false));
+  }, [user]);
 
   async function saveQuickLog(form) {
     const r = await api.post('/logs', {
       log_date: new Date().toISOString().slice(0, 10),
       hours_studied: parseFloat(form.hours_studied) || 0,
-      mood: form.mood,
-      what_studied: form.what_studied,
-      wins: form.wins,
+      mood: form.mood, what_studied: form.what_studied, wins: form.wins,
     });
     setLogs(prev => {
-      const today = r.data.log_date?.slice(0, 10);
-      return [r.data, ...prev.filter(l => l.log_date?.slice(0, 10) !== today)];
+      const dk = r.data.log_date?.slice(0, 10);
+      return [r.data, ...prev.filter(l => l.log_date?.slice(0, 10) !== dk)];
     });
   }
 
   const dateStr = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-  if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text3)' }}>
-      Loading GrowthOS…
+  if (dataLoading) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', flexDirection:'column', gap:12, background:'var(--bg)', color:'var(--text3)' }}>
+      <div style={{ fontSize:28 }}>🌱</div>
+      <div style={{ fontSize:14 }}>Loading your workspace…</div>
     </div>
   );
 
   function renderPage() {
     switch (page) {
-      case 'dashboard': return <Dashboard tasks={tasks} logs={logs} onQuickLog={() => setShowQuickLog(true)} setPage={setPage} toast={toast} />;
-      case 'tasks': return <TasksPage tasks={tasks} onTasksChange={setTasks} projects={projects} toast={toast} />;
-      case 'timer': return <TimerPage tasks={tasks} toast={toast} />;
-      case 'calendar': return <CalendarPage tasks={tasks} toast={toast} />;
-      case 'roadmap': return <RoadmapPage toast={toast} />;
-      case 'projects': return <ProjectsPage toast={toast} />;
-      case 'notes': return <NotesPage toast={toast} />;
-      case 'revision': return <RevisionPage toast={toast} />;
-      case 'analytics': return <AnalyticsPage tasks={tasks} logs={logs} />;
-      case 'insights': return <InsightsPage tasks={tasks} logs={logs} />;
-      default: return null;
+      case 'dashboard':  return <Dashboard tasks={tasks} logs={logs} onQuickLog={() => setShowQuickLog(true)} setPage={setPage} toast={toast} />;
+      case 'tasks':      return <TasksPage tasks={tasks} onTasksChange={setTasks} projects={projects} toast={toast} />;
+      case 'timer':      return <TimerPage tasks={tasks} toast={toast} />;
+      case 'calendar':   return <CalendarPage tasks={tasks} toast={toast} />;
+      case 'roadmap':    return <RoadmapPage toast={toast} />;
+      case 'projects':   return <ProjectsPage toast={toast} />;
+      case 'notes':      return <NotesPage toast={toast} />;
+      case 'revision':   return <RevisionPage toast={toast} />;
+      case 'analytics':  return <AnalyticsPage tasks={tasks} logs={logs} />;
+      case 'insights':   return <InsightsPage tasks={tasks} logs={logs} />;
+      default:           return null;
     }
   }
 
   return (
     <div className="app">
       <Sidebar page={page} setPage={setPage} logs={logs} />
-
       <div className="main">
         <div className="topbar">
           <div className="topbar-title">{PAGE_TITLES[page]}</div>
           <div className="topbar-right">
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text3)' }}>{dateStr}</span>
-            <button className="chip" onClick={() => { setPage('tasks'); }}>+ Task</button>
+            <span style={{ fontFamily:'var(--mono)', fontSize:11, color:'var(--text3)' }}>{dateStr}</span>
+            <button className="chip" onClick={() => setPage('tasks')}>+ Task</button>
             <button className="chip accent" onClick={() => setShowQuickLog(true)}>⚡ Log Day</button>
           </div>
         </div>
         <div className="page-content">{renderPage()}</div>
       </div>
-
-      {showQuickLog && (
-        <QuickLogModal
-          onClose={() => setShowQuickLog(false)}
-          onSave={saveQuickLog}
-          toast={toast}
-        />
-      )}
-
+      {showQuickLog && <QuickLogModal onClose={() => setShowQuickLog(false)} onSave={saveQuickLog} toast={toast} />}
       <ToastContainer />
     </div>
   );
